@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import dbConnect from './dbConnect.js'
-import { secretKey } from '../secrets.js'
+import { secretKey } from './secrets.js'
 
 export async function userLogin(req, res) {
   const { email, password } = req.body
@@ -31,13 +31,7 @@ export async function addNewUser(req, res) {
 }
 
 export async function updateUser(req, res) {
-  const token = req.headers.authorization
-  const decodedToken = jwt.verify(token, secretKey)
   const { uid } = req.params // profile they want to update
-  if(uid !== decodedToken.uid) {
-    res.status(401).send({ message: 'Invalid token ID' })
-    return
-  }
   const db = dbConnect()
   await db.collection('users').doc(uid).update(req.body)
   res.status(202).send({ message: 'updated'})
